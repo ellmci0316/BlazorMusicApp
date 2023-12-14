@@ -1,0 +1,84 @@
+﻿@using Models
+
+@page "/"
+
+<PageTitle>Index</PageTitle>
+<h3>Playlist: Classics</h3>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Artist</th>
+            <th>Genre</th>
+            <th>Playlist</th>
+        </tr>
+
+    </thead>
+    <tbody>    
+     @foreach (var track in tracks)
+     {
+         
+        <tr>
+                <td>@track.TrackId</td>
+                <td>@track.Title</td>
+                <td>@track.Artist</td>
+                <td>@track.Genre</td>
+                <td>@track.Playlist</td>
+                <td>
+                    <button @onclick="() => DeleteTrack(track)">Delete Track</button>
+                </td>
+        </tr>
+
+     }
+    </tbody>
+</table>
+
+<div>
+    <h4>Add new track</h4>
+    <form @onsubmit="AddTrack">
+        <label>Title:</label>
+        <input @bind="newTrack.Title"/>
+        <br/>
+
+        <label>Artist:</label>
+        <input @bind="newTrack.Artist" />
+        <br />
+
+        <label>Genre:</label>
+        <input @bind="newTrack.Genre" />
+        <br />
+
+        <button type="submit">Add Track</button>
+    </form>
+</div>
+
+
+@code{
+    MusicDatabaseContext db = new MusicDatabaseContext();
+
+    private List<Track> tracks;
+    private Track newTrack = new Track();
+
+    protected override void OnInitialized()
+    {
+        tracks = db.Tracks.ToList();
+    }
+
+    private void AddTrack()
+    {
+        newTrack.Playlist = "Classics";
+        db.Tracks.Add(newTrack);
+        db.SaveChanges();
+        newTrack = new Track();
+    }
+
+    private void DeleteTrack(Track track)
+    {
+        db.Tracks.Remove(track);
+        db.SaveChanges();
+        tracks = db.Tracks.ToList();
+    }
+
+}
